@@ -7,6 +7,7 @@ from mercury.models import (
     WheelSpeedSensor,
     SuspensionSensor,
     FuelLevelSensor,
+    WindSpeedSensor,
 )
 
 
@@ -22,7 +23,6 @@ class TemperatureForm(forms.ModelForm):
                 attrs={"id": "post-temperature", "required": True}
             ),
         }
-
 
 class AccelerationForm(forms.ModelForm):
     class Meta:
@@ -42,7 +42,6 @@ class AccelerationForm(forms.ModelForm):
                 attrs={"id": "post-acceleration-Z", "required": True}
             ),
         }
-
 
 class WheelSpeedForm(forms.ModelForm):
     class Meta:
@@ -66,7 +65,6 @@ class WheelSpeedForm(forms.ModelForm):
             ),
         }
 
-
 class SuspensionForm(forms.ModelForm):
     class Meta:
         model = SuspensionSensor
@@ -89,7 +87,6 @@ class SuspensionForm(forms.ModelForm):
             ),
         }
 
-
 class FuelLevelForm(forms.ModelForm):
     class Meta:
         model = FuelLevelSensor
@@ -103,6 +100,18 @@ class FuelLevelForm(forms.ModelForm):
             ),
         }
 
+class WindSpeedForm(forms.ModelForm):
+    class Meta:
+        model = WindSpeedSensor
+        fields = "__all__"
+        widgets = {
+            "created_at": forms.DateTimeInput(
+                attrs={"id": "post-created-at_wis", "required": True}
+            ),
+            "current_wind_speed": forms.NumberInput(
+                attrs={"id": "post-current-wind-speed", "required": True}
+            ),
+        }
 
 class CANForm(forms.Form):
     """This simple form is used just to accept a CAN message on the CAN UI."""

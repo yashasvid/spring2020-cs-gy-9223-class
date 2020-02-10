@@ -350,6 +350,78 @@ $(function () {
         });
     }
 
+    // Wind Speed Sensor
+    let button_counter_wis = 0;
+    let buttonpressed_wis;
+    let interval_var_wis;
+    $('.submitbutton_wis,.submitbutton_all').click(function () {
+        buttonpressed_wis = $(this).attr('name')
+    });
+    $('#WindSpeedForm,#AllSensorsForm').on('submit', function (event) {
+        event.preventDefault();
+        if (buttonpressed_wis == "Continuous" && button_counter_wis != 1) {
+            console.log("Continuous Submission enabled for Wind Speed panel");
+            create_post_wis();
+            button_counter_wis = 1;
+            interval_var_wis = setInterval(create_post_fl, 2000);
+            setTimeout(clear_interval_wis, timeOut);
+        } else if (buttonpressed_wis == "Once") {
+            console.log("Wind Speed Submit Once button was pressed.");
+            if (interval_var_wis) {
+                clearInterval(interval_var_wis);
+                button_counter_wis = 0;
+            }
+            create_post_wis();
+        } else if (buttonpressed_wis == "Stop") {
+            console.log("Stopping continuous submission for Wind Speed panel.");
+            if (interval_var_wis) {
+                clearInterval(interval_var_wis);
+                button_counter_wis = 0;
+            }
+        }
+    });
+
+    function clear_interval_wis() {
+        if (interval_var_wis) {
+            clearInterval(interval_var_wis);
+            button_counter_wis = 0;
+        }
+    }
+
+
+    function create_post_wis() {
+        console.log("Entered create_post_wis() fl function.");
+        let dateTime_wis = getDateTimenow();
+        $.ajax({
+            url: "", // the endpoint
+            type: "POST", // http method
+            data: {
+                created_at_wis: dateTime_wis,
+                current_wind_speed: $('#post-current-wind-speed').val(),
+            }, // data sent with the post request
+            // handle a successful response
+            success: function () {
+                let current_wind_speed = parseFloat($('#post-current-wind-speed').val());
+                if (current_wind_speed <= 10) {
+                    current_wind_speed += 90;
+                } else {
+                    current_wind_speed -= getRandomNumber(0, 5);
+                }
+                $('#post-created-at_wis').val(dateTime_wis);
+                $('#post-current-wind-speed').val(roundOffAndParse(current_wind_speed));
+
+                console.log("POSTing was successful for WIS"); // another sanity check
+            },
+
+            // handle a non-successful response
+            error: function (xhr, errmsg, err) {
+                $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: " + errmsg +
+                    " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+        });
+    }
+
     function clear_interval_fl() {
         if (interval_var_fl) {
             clearInterval(interval_var_fl);
